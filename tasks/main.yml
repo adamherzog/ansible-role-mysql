@@ -1,0 +1,98 @@
+---
+- name: install | check if mysql yum repository is installed
+  command: rpm -q mysql-community-release
+  register: mysql_repo_installed
+  ignore_errors: true
+  failed_when: false
+  changed_when: false
+
+- name: install | install mysql yum repository
+  yum:
+    name: http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm
+    state: present
+  when: mysql_repo_installed|failed
+
+- name: install | install mysql packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - mysql-community-server
+    - mysql-community-client
+    - mysql-community-devel
+    - MySQL-python
+
+- name: configure | ensure mysql is running and enabled
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
+
+- name: root | update root password
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ mysql_root_password }}"
+  with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost
+
+- name: root | install root .my.cnf file
+  template:
+    src: root-my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: databases | remove mysql test database
+  mysql_db:
+    name: test
+    state: absent
+
+- name: databases | create/remove configured databases
+  mysql_db:
+    name: "{{ item.name }}"
+    collation: "{{ item.collation|default('utf8_general_ci') }}"
+    encoding: "{{ item.encoding|default('utf8') }}"
+    state: "{{ item.state|default('present') }}"
+  with_items: mysql_databases
+
+- name: users | remove anonymous mysql user
+  mysql_user:
+    name: ""
+    state: absent
+
+- name: users | create/remove configured users
+  mysql_user:
+    name: "{{ item.name }}"
+    host: "{{ item.host|default('localhost') }}"
+    password: "{{ item.password }}"
+    priv: "{{ item.priv|default('*.*:USAGE') }}"
+    state: "{{ item.state|default('present') }}"
+  with_items: mysql_users
+  no_log: true
+
+- name: backup | create mysql backup directory
+  file:
+    path: /root/mysql_backups
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+  when: mysql_daily_backup
+
+- name: backup | add mysql backup cron job
+  cron:
+    name: backup_mysql_full
+    user: root
+    special_time: daily
+    job: "/usr/bin/mysqldump --all-databases | bzip2 > /root/mysql_backups/full_`date +\\%Y-\\%m-\\%d_\\%H:\\%M:\\%S`.sql.bz2"
+  when: mysql_daily_backup
+
+- name: backup | remove mysql backup cron job
+  cron:
+    name: backup_mysql_full
+    state: absent
+  when: not mysql_daily_backup

@@ -1,0 +1,5 @@
+---
+mysql_root_password: ''
+mysql_databases: []
+mysql_users: []
+mysql_daily_backup: no
