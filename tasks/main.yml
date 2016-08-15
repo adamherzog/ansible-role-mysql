@@ -34,6 +34,7 @@
     host: "{{ item }}"
     password: "{{ mysql_root_password }}"
   with_items:
+    - "{{ inventory_hostname }}"
     - 127.0.0.1
     - ::1
     - localhost
@@ -59,10 +60,14 @@
     state: "{{ item.state|default('present') }}"
   with_items: mysql_databases
 
-- name: users | remove anonymous mysql user
+- name: users | remove anonymous mysql users
   mysql_user:
     name: ""
+    host: "{{ item }}"
     state: absent
+  with_items:
+    - ""
+    - "{{ inventory_hostname }}"
 
 - name: users | create/remove configured users
   mysql_user:
