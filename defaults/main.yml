@@ -3,3 +3,23 @@ mysql_root_password: ''
 mysql_databases: []
 mysql_users: []
 mysql_daily_backup: no
+
+mysql_sql_mode: NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+
+mysql_binary_log: no
+mysql_log_bin_trust_function_creators: '0'
+mysql_binlog_cache_size: null
+
+mysql_query_cache_type: null
+mysql_query_cache_limit: null
+
+mysql_innodb_buffer_pool_size: null
+mysql_innodb_buffer_pool_instances: null
+
+mysql_join_buffer_size: null
+mysql_key_buffer_size: null
+
+mysql_max_connections: null
+
+mysql_tmp_table_size: null
+mysql_max_heap_table_size: null

@@ -1,0 +1,70 @@
+# {{ ansible_managed }}
+
+# For advice on how to change settings please see
+# http://dev.mysql.com/doc/refman/5.6/en/server-configuration-defaults.html
+
+[mysqld]
+#
+# Remove leading # and set to the amount of RAM for the most important data
+# cache in MySQL. Start at 70% of total RAM for dedicated server, else 10%.
+# innodb_buffer_pool_size = 128M
+#
+# Remove leading # to turn on a very important data integrity option: logging
+# changes to the binary log between backups.
+{% if mysql_binary_log|default(no) %}
+log_bin=mysql-bin
+log_bin_trust_function_creators={{ mysql_log_bin_trust_function_creators }}
+{% else %}
+# log_bin
+{% endif %}
+
+# Remove leading # to set options mainly useful for reporting servers.
+# The server defaults are faster for transactions and fast SELECTs.
+# Adjust sizes as needed, experiment to find the optimal values.
+# join_buffer_size = 128M
+# sort_buffer_size = 2M
+# read_rnd_buffer_size = 2M
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+
+# Recommended in standard MySQL setup
+sql_mode={{ mysql_sql_mode }}
+
+# Tuning
+{% if mysql_query_cache_type %}
+query_cache_type={{ mysql_query_cache_type }}
+{% endif %}
+{% if mysql_query_cache_limit %}
+query_cache_limit={{ mysql_query_cache_limit }}
+{% endif %}
+{% if mysql_innodb_buffer_pool_size %}
+innodb_buffer_pool_size={{ mysql_innodb_buffer_pool_size }}
+{% endif %}
+{% if mysql_innodb_buffer_pool_instances %}
+innodb_buffer_pool_instances={{ mysql_innodb_buffer_pool_instances }}
+{% endif %}
+{% if mysql_binlog_cache_size %}
+binlog_cache_size={{ mysql_binlog_cache_size }}
+{% endif %}
+{% if mysql_join_buffer_size %}
+join_buffer_size={{ mysql_join_buffer_size }}
+{% endif %}
+{% if mysql_key_buffer_size %}
+key_buffer_size={{ mysql_key_buffer_size }}
+{% endif %}
+{% if mysql_max_connections %}
+max_connections={{ mysql_max_connections }}
+{% endif %}
+{% if mysql_tmp_table_size %}
+tmp_table_size={{ mysql_tmp_table_size }}
+{% endif %}
+{% if mysql_max_heap_table_size %}
+max_heap_table_size={{ mysql_max_heap_table_size }}
+{% endif %}
+
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid

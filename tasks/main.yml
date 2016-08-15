@@ -22,6 +22,17 @@
     - mysql-community-devel
     - MySQL-python
 
+- name: configure | install system my.cnf
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify:
+    - restart mysql
+
 - name: configure | ensure mysql is running and enabled
   service:
     name: mysqld
