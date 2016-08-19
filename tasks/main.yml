@@ -1,16 +1,8 @@
 ---
-- name: install | check if mysql yum repository is installed
-  command: rpm -q mysql-community-release
-  register: mysql_repo_installed
-  ignore_errors: true
-  failed_when: false
-  changed_when: false
-
 - name: install | install mysql yum repository
   yum:
     name: http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm
     state: present
-  when: mysql_repo_installed|failed
 
 - name: install | install mysql packages
   yum:
