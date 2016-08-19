@@ -61,7 +61,7 @@
     collation: "{{ item.collation|default('utf8_general_ci') }}"
     encoding: "{{ item.encoding|default('utf8') }}"
     state: "{{ item.state|default('present') }}"
-  with_items: mysql_databases
+  with_items: "{{ mysql_databases }}"
 
 - name: users | remove anonymous mysql users
   mysql_user:
@@ -79,7 +79,7 @@
     password: "{{ item.password }}"
     priv: "{{ item.priv|default('*.*:USAGE') }}"
     state: "{{ item.state|default('present') }}"
-  with_items: mysql_users
+  with_items: "{{ mysql_users }}"
   no_log: true
 
 - name: backup | create mysql backup directory
