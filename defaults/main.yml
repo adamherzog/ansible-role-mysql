@@ -9,6 +9,7 @@ mysql_sql_mode: NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
 mysql_binary_log: no
 mysql_log_bin_trust_function_creators: '0'
 mysql_binlog_cache_size: null
+mysql_expire_logs_days: null
 
 mysql_query_cache_type: null
 mysql_query_cache_limit: null
