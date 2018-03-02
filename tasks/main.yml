@@ -106,7 +106,7 @@
     name: backup_mysql_full
     user: root
     special_time: daily
-    job: "/usr/bin/mysqldump --all-databases --single-transaction | bzip2 > /root/mysql_backups/full_`date +\\%Y-\\%m-\\%d_\\%H:\\%M:\\%S`.sql.bz2"
+    job: "/usr/bin/mysqldump --all-databases --flush-logs --single-transaction | bzip2 > /root/mysql_backups/full_`date +\\%Y-\\%m-\\%d_\\%H:\\%M:\\%S`.sql.bz2"
   when: mysql_daily_backup
 
 - name: backup | remove mysql backup cron job
