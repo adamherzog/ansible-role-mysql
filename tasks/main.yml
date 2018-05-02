@@ -9,6 +9,9 @@
     name: http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm
     state: present
   register: result
+  until: 'result.rc == 0'
+  retries: 5
+  delay: 10
   when: not mysql_repofile_result.stat.exists
 
 - name: install | install mysql packages
